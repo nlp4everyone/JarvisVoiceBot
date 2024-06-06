@@ -1,2 +1,5 @@
-pvrecorder==1.2.2
-pyaudio==0.2.14
+python-dotenv==1.0.1
+Requests==2.31.0
+Telethon==1.34.0
+aiohttp
+pyTelegramBotAPI
