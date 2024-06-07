@@ -3,3 +3,4 @@ telegram_modules/*
 config/__pycache__/
 temp_files/*
 .env
+__pycache__/
