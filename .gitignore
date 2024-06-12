@@ -6,3 +6,6 @@ sessions/*
 component_samples/
 config/
 system_components/
+chat_modules/
+speech2text_modules/
+test.py
