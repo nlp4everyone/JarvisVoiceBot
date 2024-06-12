@@ -3,7 +3,7 @@ from telebot.async_telebot import AsyncTeleBot
 from config import telegram_params
 from telebot import TeleBot
 
-temp_folder_path = "temp_files"
+temp_folder_path = "../temp_files"
 
 # Check token
 if not isinstance(telegram_params.bot_token,str):

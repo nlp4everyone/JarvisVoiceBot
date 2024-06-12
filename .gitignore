@@ -1,6 +1,8 @@
 .idea
-telegram_modules/*
-config/__pycache__/
-temp_files/*
 .env
+config/__pycache__/
 __pycache__/
+sessions/*
+component_samples/
+config/
+system_components/
