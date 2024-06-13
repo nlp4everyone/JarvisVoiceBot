@@ -1,3 +1,6 @@
+# ⭐ Notify: 
+Python version must be 3.9 or 3.11
+
 # ⭐ For install dependencies, run:
 bash update_chat_module.sh
 
