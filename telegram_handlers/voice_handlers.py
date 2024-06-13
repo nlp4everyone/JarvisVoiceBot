@@ -1,24 +1,24 @@
+import os.path
 from telethon import events
 import time,json
 from system_components import Logger
 from chat_modules.llamaindex.intergrations import IntergrationsChatModule,ChatModelProvider
+from speech2text_modules.intergrations import AssemblyS2TModule
+from config import telegram_params
 
 # Get approved users
 with open("./approved_users.json",'r') as f:
     data = json.load(f)
 approved_users = list(dict(data).values())
 
-# Define params
+# Define module
 chat_module = IntergrationsChatModule(service_name = ChatModelProvider.GROQ, model_name = "llama3-8b-8192")
-system_prompt = """
-You're are helpful assistant, be kind, non biased and toxic.
-"""
+s2t_module = AssemblyS2TModule()
 
 async def response_answer(question: str, client, event):
     # Important parameter
     chat = await event.get_chat()  # Get chat object
 
-    Logger.info(f"User {event.chat.last_name} (ID: {event.chat_id}) Question: {question}")
     # Begin Time
     beginTime = time.time()
     # Get response
@@ -59,19 +59,23 @@ async def welcome_response(event):
 @events.register(events.NewMessage(pattern = r"[^/]"))
 async def question_response(event):
     # Response text question event
-
     # Define client
     client = event.client
     # Get question
     question = event.message.message
+    # Log state
+    Logger.info(f"User {event.chat.last_name} (ID: {event.chat_id}) Question: {question}")
 
     # Response
-    await response_answer(question = question,event = event,client = client)
+    await response_answer(question = question, event = event, client = client)
 
 @events.register(events.NewMessage(func = lambda e: e.message.voice))
 async def voice_response(event):
     # Define user id
     user_id = event.message.chat_id
+    # Define client
+    client = event.client
+    chat = await event.get_chat()
 
     # Get date
     event_date = event.message.date
@@ -79,5 +83,24 @@ async def voice_response(event):
     voice_date = event_date.strftime("%H:%M_%Y-%m-%d")
 
     audio_name = f"audio_{user_id}_{voice_date}.wav"
+    audio_path = os.path.join(telegram_params.audio_dir,audio_name)
+
+    beginTime = time.time()
     # Download voice
-    await event.message.download_media(file=audio_name)
+    await event.message.download_media(file = audio_path)
+
+    # Get transcription
+    transcription = s2t_module.transcribe(audio_path)
+    endTime = time.time() - beginTime
+    print(f"{round(endTime,1)} s")
+
+    # Send message
+    async with client.action(chat, 'typing') as action:
+        await client.send_message(chat, f"Your COMMAND: {transcription}")
+
+    # Log state
+    Logger.info(f"User {event.chat.last_name} (ID: {event.chat_id}) Question: {transcription}")
+
+    # Response
+    await response_answer(question = transcription, event = event, client = client)
+

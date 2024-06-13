@@ -17,5 +17,8 @@ cp -rf $project_name/component_samples component_samples
 cp -rf $project_name/config/telegram_params.py config/telegram_params.py
 cp -rf $project_name/sample_bot_service.py sample_bot_service.py
 
+# Install dependencies
+pip install -r $project_name/requirements.txt
+
 # Remove whole project
 rm -rf $project_name

@@ -4,9 +4,10 @@ from config import telegram_params
 from telegram_handlers.voice_handlers import (welcome_response,
                                               question_response,
                                               voice_response)
-
 # Init session folder
 os.makedirs(telegram_params.session_dir, exist_ok=True)
+os.makedirs(telegram_params.audio_dir, exist_ok = True)
+
 # Define session path
 session_name = "voice_bot"
 session_path = os.path.join(telegram_params.session_dir, session_name)
