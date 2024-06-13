@@ -1,9 +1,10 @@
 import os,asyncio,json
 from telethon import TelegramClient
 from config import telegram_params
-from telegram_handlers.voice_handlers import (welcome_response,
-                                              question_response,
-                                              voice_response)
+from telegram_handlers.event_handlers import (welcome_response_handler,
+                                              question_response_handler,
+                                              voice_response_handler,
+                                              recommendation_click_handler)
 # Init session folder
 os.makedirs(telegram_params.session_dir, exist_ok=True)
 os.makedirs(telegram_params.audio_dir, exist_ok = True)
@@ -28,7 +29,7 @@ def main():
     client.start(bot_token = telegram_params.bot_token)
 
     # Define event handler
-    event_handlers = [welcome_response,question_response,voice_response]
+    event_handlers = [welcome_response_handler,question_response_handler,voice_response_handler,recommendation_click_handler]
     # Add event
     for handler in event_handlers: client.add_event_handler(handler)
 
