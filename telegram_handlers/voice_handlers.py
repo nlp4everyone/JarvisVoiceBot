@@ -3,7 +3,7 @@ from telethon import events
 import time,json
 from system_components import Logger
 from chat_modules.llamaindex.intergrations import IntergrationsChatModule,ChatModelProvider
-from speech2text_modules.intergrations import AssemblyS2TModule
+from speech2text_modules.intergrations import DeepGramS2TModule
 from config import telegram_params
 
 # Get approved users
@@ -13,7 +13,7 @@ approved_users = list(dict(data).values())
 
 # Define module
 chat_module = IntergrationsChatModule(service_name = ChatModelProvider.GROQ, model_name = "llama3-8b-8192")
-s2t_module = AssemblyS2TModule()
+s2t_module = DeepGramS2TModule()
 
 async def response_answer(question: str, client, event):
     # Important parameter
@@ -85,22 +85,30 @@ async def voice_response(event):
     audio_name = f"audio_{user_id}_{voice_date}.wav"
     audio_path = os.path.join(telegram_params.audio_dir,audio_name)
 
-    beginTime = time.time()
     # Download voice
     await event.message.download_media(file = audio_path)
 
-    # Get transcription
-    transcription = s2t_module.transcribe(audio_path)
-    endTime = time.time() - beginTime
-    print(f"{round(endTime,1)} s")
 
+    try:
+        # Get transcription
+        transcription = s2t_module.transcribe(audio_path)
+
+        # Send response
+        async with client.action(chat, 'typing') as action:
+            await client.send_message(chat, f"Your COMMAND: {transcription}")
+
+        # Log state
+        Logger.info(f"User {event.chat.last_name} (ID: {event.chat_id}) Question: {transcription}")
+
+        # Response
+        await response_answer(question=transcription, event=event, client=client)
+
+    except:
     # Send message
-    async with client.action(chat, 'typing') as action:
-        await client.send_message(chat, f"Your COMMAND: {transcription}")
+        async with client.action(chat, 'typing') as action:
+            await client.send_message(chat, f"Wrong with response from speech to text module")
 
-    # Log state
-    Logger.info(f"User {event.chat.last_name} (ID: {event.chat_id}) Question: {transcription}")
 
-    # Response
-    await response_answer(question = transcription, event = event, client = client)
+
+
 

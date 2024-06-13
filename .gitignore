@@ -9,4 +9,5 @@ system_components/
 chat_modules/
 speech2text_modules/
 test.py
-user_voices/
+cached_voices_folder/
+sessions_folder/*
