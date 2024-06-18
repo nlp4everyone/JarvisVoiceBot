@@ -15,3 +15,8 @@ pip install -r requirements.txt
 # 🚀 For run project, type:
 
 python voice_bot_service.py
+
+# 📹 Demo: 
+
+https://github.com/nlp4everyone/JarvisVoiceBot/assets/150988243/5371bd4a-2b2b-44bc-9bc4-744bbfab3cf9
+
